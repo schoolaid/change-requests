@@ -40,6 +40,6 @@ class IndexChangeRequestRequest extends FormRequest
 
     public function perPage(): int
     {
-        return (int) ($this->input('perPage') ?? config('change-requests.per_page'));
+        return max(1, (int) ($this->input('perPage') ?? config('change-requests.per_page') ?? 25));
     }
 }
