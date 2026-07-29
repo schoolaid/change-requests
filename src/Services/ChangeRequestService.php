@@ -91,7 +91,7 @@ class ChangeRequestService implements ChangeRequestServiceInterface
             $model = $this->lockOrFail($uuid);
             $current = $model->status;
 
-            if (! $current->canTransitionTo($target)) {
+            if ($current === null || ! $current->canTransitionTo($target)) {
                 throw new InvalidStatusTransitionException($current, $target);
             }
 

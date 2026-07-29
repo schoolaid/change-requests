@@ -5,6 +5,7 @@ namespace Said\ChangeRequests\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Said\ChangeRequests\Casts\SafeEnum;
 use Said\ChangeRequests\Enums\ChangeRequestPriority;
 use Said\ChangeRequests\Enums\ChangeRequestStatus;
 use Said\ChangeRequests\Enums\MessageRole;
@@ -15,15 +16,15 @@ use Said\ChangeRequests\Enums\MessageRole;
  * @property string $title
  * @property string $description
  * @property string|null $category
- * @property ChangeRequestPriority $priority
- * @property ChangeRequestStatus $status
+ * @property ChangeRequestPriority|null $priority Null si la BD trae un valor fuera del enum (ver SafeEnum)
+ * @property ChangeRequestStatus|null $status Null si la BD trae un valor fuera del enum (ver SafeEnum)
  * @property string $created_by_id
  * @property string $created_by_name
  * @property string $created_by_email
  * @property string|null $school_id
  * @property string|null $school_name
  * @property string $source_app
- * @property MessageRole $last_actor
+ * @property MessageRole|null $last_actor Null si la BD trae un valor fuera del enum (ver SafeEnum)
  * @property array<int, array<string, string>> $messages
  * @property array<string, string>|null $metadata
  * @property array<int, string>|null $images
@@ -70,9 +71,9 @@ class ChangeRequest extends Model
     protected function casts(): array
     {
         return [
-            'status' => ChangeRequestStatus::class,
-            'priority' => ChangeRequestPriority::class,
-            'last_actor' => MessageRole::class,
+            'status' => SafeEnum::class . ':' . ChangeRequestStatus::class,
+            'priority' => SafeEnum::class . ':' . ChangeRequestPriority::class,
+            'last_actor' => SafeEnum::class . ':' . MessageRole::class,
             'messages' => 'array',
             'metadata' => 'array',
             'images' => 'array',

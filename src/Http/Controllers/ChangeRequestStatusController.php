@@ -34,7 +34,8 @@ class ChangeRequestStatusController extends Controller
         } catch (InvalidStatusTransitionException $exception) {
             return response()->json([
                 'message' => __('change-requests::messages.invalidTransition', [
-                    'from' => $exception->from->label(),
+                    'from' => $exception->from?->label()
+                        ?? __('change-requests::messages.unknownStatus'),
                     'to' => $exception->to->label(),
                     'allowed' => $exception->allowed === []
                         ? __('change-requests::messages.noTransitionsAvailable')
