@@ -7,12 +7,15 @@ use Illuminate\Routing\Controller;
 use Said\ChangeRequests\Contracts\AuthorizerInterface;
 use Said\ChangeRequests\Contracts\ChangeRequestServiceInterface;
 use Said\ChangeRequests\Exceptions\InvalidStatusTransitionException;
+use Said\ChangeRequests\Http\Controllers\Concerns\FindsChangeRequestByUuid;
 use Said\ChangeRequests\Http\Requests\ChangeStatusRequest;
 use Said\ChangeRequests\Http\Resources\ChangeRequestResource;
 use Said\ChangeRequests\Repositories\ChangeRequestRepositoryInterface;
 
 class ChangeRequestStatusController extends Controller
 {
+    use FindsChangeRequestByUuid;
+
     public function __construct(
         private readonly ChangeRequestRepositoryInterface $repository,
         private readonly ChangeRequestServiceInterface $service,
@@ -22,9 +25,7 @@ class ChangeRequestStatusController extends Controller
 
     public function update(ChangeStatusRequest $request, string $uuid): ChangeRequestResource|JsonResponse
     {
-        $model = $this->repository->findByUuid($uuid);
-
-        abort_if($model === null, 404);
+        $model = $this->findChangeRequestOrFail($uuid);
         abort_unless($this->authorizer->canChangeStatus($request->user(), $model), 403);
 
         try {

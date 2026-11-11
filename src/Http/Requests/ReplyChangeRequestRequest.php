@@ -37,16 +37,15 @@ class ReplyChangeRequestRequest extends FormRequest
     }
 
     /**
+     * `required` ya rechaza un `body` de solo espacios (compara con `trim()`), con su mensaje
+     * traducido; no hace falta otra regla para eso.
+     *
      * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'body' => ['required', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
-                if (trim((string) $value) === '') {
-                    $fail('El mensaje no puede estar vacío.');
-                }
-            }],
+            'body' => ['required', 'string'],
             'type' => ['required', Rule::in(MessageType::replyableValues())],
         ];
     }

@@ -8,15 +8,17 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Routing\Controller;
 use Said\ChangeRequests\Contracts\AuthorizerInterface;
 use Said\ChangeRequests\Contracts\ChangeRequestServiceInterface;
+use Said\ChangeRequests\Http\Controllers\Concerns\FindsChangeRequestByUuid;
 use Said\ChangeRequests\Http\Requests\IndexChangeRequestRequest;
 use Said\ChangeRequests\Http\Requests\StoreChangeRequestRequest;
 use Said\ChangeRequests\Http\Resources\ChangeRequestListResource;
 use Said\ChangeRequests\Http\Resources\ChangeRequestResource;
-use Said\ChangeRequests\Models\ChangeRequest;
 use Said\ChangeRequests\Repositories\ChangeRequestRepositoryInterface;
 
 class ChangeRequestController extends Controller
 {
+    use FindsChangeRequestByUuid;
+
     public function __construct(
         private readonly ChangeRequestRepositoryInterface $repository,
         private readonly ChangeRequestServiceInterface $service,
@@ -44,19 +46,10 @@ class ChangeRequestController extends Controller
 
     public function show(Request $request, string $uuid): ChangeRequestResource
     {
-        $model = $this->findOrFail($uuid);
+        $model = $this->findChangeRequestOrFail($uuid);
 
         abort_unless($this->authorizer->canView($request->user(), $model), 403);
 
         return new ChangeRequestResource($model);
-    }
-
-    private function findOrFail(string $uuid): ChangeRequest
-    {
-        $model = $this->repository->findByUuid($uuid);
-
-        abort_if($model === null, 404);
-
-        return $model;
     }
 }
