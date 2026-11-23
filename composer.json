@@ -1,0 +1,33 @@
+{
+    "name": "schoolaid/change-requests",
+    "description": "Solicitudes de cambio de las apps de SAID: modelo, API HTTP y migraciones sobre la tabla compartida change_requests.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Said\\ChangeRequests\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Said\\ChangeRequests\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    }
+}
