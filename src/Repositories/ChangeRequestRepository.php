@@ -67,13 +67,25 @@ class ChangeRequestRepository implements ChangeRequestRepositoryInterface
     }
 
     /**
-     * Toda lectura pasa por acá: el scope por `source_app` no es opcional ni
-     * configurable desde el request — la BD es compartida con otras apps.
+     * Toda lectura y todo bloqueo pasan por acá: el scope no es opcional ni
+     * configurable desde el request. La BD es compartida con otras apps
+     * (`source_app`) y, dentro de esta app, con todas las organizaciones
+     * (`school_id` = la organización del contexto, el tenant activo).
+     *
+     * Sin organización en el contexto la consulta no devuelve nada: falla
+     * cerrado en vez de abrir los tickets de todas las organizaciones.
      * `create()` no la usa; estampa el scope directamente antes de insertar.
      */
     private function baseQuery(): Builder
     {
-        return ChangeRequest::query()
-            ->where('source_app', $this->context->resolve()->sourceApp);
+        $context = $this->context->resolve();
+
+        $query = ChangeRequest::query()->where('source_app', $context->sourceApp);
+
+        if ($context->organizationId === null || $context->organizationId === '') {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('school_id', $context->organizationId);
     }
 }
